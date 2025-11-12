@@ -91,7 +91,7 @@ namespace ExtendedVariants.Entities.ForMappers {
 
             Action applyVariant = () => {
                 T value = newValueGetter();
-                ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variantChange, value, revertOnLeave, isFade: false, revertOnDeath, legacy: false);
+                ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variantChange, value, revertOnLeave, isFade: false, revertOnDeath, legacy: false);
                 valueToRevertOnLeave = value;
             };
 
@@ -110,7 +110,7 @@ namespace ExtendedVariants.Entities.ForMappers {
             base.OnLeave(player);
 
             if (revertOnLeave && (!delayRevertOnDeath || !player.Dead)) {
-                ExtendedVariantsModule.TriggerManager.OnExitedRevertOnLeaveTrigger(variantChange, valueToRevertOnLeave, legacy: false);
+                ExtendedVariantsModule.Instance.TriggerManager.OnExitedRevertOnLeaveTrigger(variantChange, valueToRevertOnLeave, legacy: false);
             }
         }
 

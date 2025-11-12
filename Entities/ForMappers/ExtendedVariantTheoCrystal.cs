@@ -116,7 +116,7 @@ namespace ExtendedVariants.Entities.ForMappers {
             base.Update();
 
             // commit remove self if the variant is disabled mid-screen and we weren't spawned as an entity
-            if (!SpawnedAsEntity && !((bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.TheoCrystalsEverywhere))) {
+            if (!SpawnedAsEntity && !((bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.TheoCrystalsEverywhere))) {
                 RemoveSelf();
             }
         }

@@ -268,7 +268,7 @@ namespace ExtendedVariants {
                 return vanillaVariantHandler.IsSetToDefaultByPlayer();
             } else {
                 return ExtendedVariantTriggerManager.AreValuesIdentical(
-                    ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variant),
+                    ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variant),
                     variantHandler.GetDefaultVariantValue());
             }
         }
@@ -427,7 +427,7 @@ namespace ExtendedVariants {
             foreach (ExtendedVariantsModule.Variant variant in enabledExtendedVariants) {
                 string variantName = Dialog.Clean($"MODOPTIONS_EXTENDEDVARIANTS_{variant}");
                 Type variantType = ExtendedVariantsModule.VariantHandlers[variant].GetVariantType();
-                object variantValue = ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variant);
+                object variantValue = ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variant);
                 object defaultValue = ExtendedVariantsModule.VariantHandlers[variant].GetDefaultVariantValue();
 
                 if (variant == ExtendedVariantsModule.Variant.DashDirection) {

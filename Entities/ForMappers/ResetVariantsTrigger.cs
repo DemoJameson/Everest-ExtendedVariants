@@ -16,11 +16,11 @@ namespace ExtendedVariants.Entities.ForMappers {
 
         public override void OnEnter(Player player) {
             if (vanilla) {
-                ExtendedVariantsModule.TriggerManager.ResetAllVariantsToDefault(isVanilla: true);
+                ExtendedVariantsModule.Instance.TriggerManager.ResetAllVariantsToDefault(isVanilla: true);
             }
 
             if (extended) {
-                ExtendedVariantsModule.TriggerManager.ResetAllVariantsToDefault(isVanilla: false);
+                ExtendedVariantsModule.Instance.TriggerManager.ResetAllVariantsToDefault(isVanilla: false);
             }
         }
     }

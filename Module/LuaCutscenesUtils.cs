@@ -10,7 +10,7 @@ namespace ExtendedVariants.Module {
     public static class LuaCutscenesUtils {
         public static object GetCurrentVariantValue(string variantString) {
             ExtendedVariantsModule.Variant variant = (ExtendedVariantsModule.Variant) Enum.Parse(typeof(ExtendedVariantsModule.Variant), variantString);
-            return ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variant);
+            return ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variant);
         }
 
         public static void TriggerIntegerVariant(string variant, int newValue, bool revertOnDeath) {
@@ -27,7 +27,7 @@ namespace ExtendedVariants.Module {
 
         public static void TriggerVariant(string variantString, object newValue, bool revertOnDeath) {
             ExtendedVariantsModule.Variant variant = (ExtendedVariantsModule.Variant) Enum.Parse(typeof(ExtendedVariantsModule.Variant), variantString);
-            ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variant, newValue, revertOnLeave: false, isFade: false, revertOnDeath, legacy: false);
+            ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant, newValue, revertOnLeave: false, isFade: false, revertOnDeath, legacy: false);
         }
 
         public static void SetJumpCount(int jumpCount) {

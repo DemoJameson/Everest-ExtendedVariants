@@ -38,7 +38,7 @@ namespace ExtendedVariants.Variants {
 
             // test if the variant is active
             cursor.EmitDelegate<Func<bool>>(() => {
-                return (bool) TriggerManager.GetCurrentVariantValue(Variant.CorrectedMirrorMode);
+                return (bool) Instance.TriggerManager.GetCurrentVariantValue(Variant.CorrectedMirrorMode);
             });
 
             // if it isn't, skip over the correction check

@@ -75,7 +75,7 @@ namespace ExtendedVariants.Module {
 
         public static Dictionary<Variant, AbstractExtendedVariant> VariantHandlers = new Dictionary<Variant, AbstractExtendedVariant>();
 
-        public static ExtendedVariantTriggerManager TriggerManager;
+        public ExtendedVariantTriggerManager TriggerManager;
 
         // ================ Module loading ================
 
@@ -487,7 +487,7 @@ namespace ExtendedVariants.Module {
 
             LeakPreventionHack.Load();
 
-            TriggerManager.Load();
+            Instance.TriggerManager.Load();
             Entities.Legacy.ExtendedVariantTrigger.Load();
             Entities.ForMappers.AbstractExtendedVariantTriggerTeleportHandler.Load();
             Entities.ForMappers.ExtendedVariantTheoCrystal.Load();

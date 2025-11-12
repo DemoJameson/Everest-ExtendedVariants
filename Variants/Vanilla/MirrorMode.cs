@@ -37,7 +37,7 @@ namespace ExtendedVariants.Variants.Vanilla {
             // Some entities (CoreMessage for example) check for MirrorMode in their Render function,
             // we need to ensure that they still render correctly even if we have a level specific MirrorMode.
             previousMirrorModeValue = SaveData.Instance.Assists.MirrorMode;
-            bool isMirrorModeActive = (bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.MirrorMode)
+            bool isMirrorModeActive = (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.MirrorMode)
                                       || SaveData.Instance.Assists.MirrorMode;
 
             SaveData.Instance.Assists.MirrorMode = isMirrorModeActive;

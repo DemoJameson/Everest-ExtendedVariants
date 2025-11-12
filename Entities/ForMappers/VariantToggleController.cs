@@ -44,12 +44,12 @@ namespace ExtendedVariants.Entities.ForMappers {
         private void updateVariants() {
             if (isFlagged) {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, object> variant in variantValues) {
-                    ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variant.Key, variant.Value, false, false, false, false);
+                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, variant.Value, false, false, false, false);
                 }
             } else {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, object> variant in variantValues) {
                     object defaultValueForVariant = ExtendedVariantTriggerManager.GetDefaultValueForVariant(variant.Key);
-                    ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variant.Key, defaultValueForVariant, false, false, false, false);
+                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, defaultValueForVariant, false, false, false, false);
                 }
             }
         }

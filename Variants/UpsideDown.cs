@@ -170,7 +170,7 @@ namespace ExtendedVariants.Variants {
             }
         }
         private static bool isUpsideDown() {
-            return (bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(Variant.UpsideDown);
+            return (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(Variant.UpsideDown);
         }
     }
 }

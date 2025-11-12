@@ -33,7 +33,7 @@ namespace ExtendedVariants.Entities.ForMappers {
         public override void OnEnter(Player player) {
             base.OnEnter(player);
 
-            bool[][] allowedDashDirections = (bool[][]) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DashDirection);
+            bool[][] allowedDashDirections = (bool[][]) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DashDirection);
 
             // the new value is a copy of the old value with one boolean flipped.
             newValue = [new bool[3], new bool[3], new bool[3]];
@@ -57,14 +57,14 @@ namespace ExtendedVariants.Entities.ForMappers {
 
             newValue[y][x] = enable;
 
-            ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(ExtendedVariantsModule.Variant.DashDirection, newValue, revertOnLeave, isFade: false, revertOnDeath, legacy: false);
+            ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(ExtendedVariantsModule.Variant.DashDirection, newValue, revertOnLeave, isFade: false, revertOnDeath, legacy: false);
         }
 
         public override void OnLeave(Player player) {
             base.OnLeave(player);
 
             if (revertOnLeave) {
-                ExtendedVariantsModule.TriggerManager.OnExitedRevertOnLeaveTrigger(ExtendedVariantsModule.Variant.DashDirection, newValue, legacy: false);
+                ExtendedVariantsModule.Instance.TriggerManager.OnExitedRevertOnLeaveTrigger(ExtendedVariantsModule.Variant.DashDirection, newValue, legacy: false);
             }
         }
     }

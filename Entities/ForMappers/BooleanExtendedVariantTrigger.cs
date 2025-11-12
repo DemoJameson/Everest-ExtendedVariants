@@ -17,7 +17,7 @@ namespace ExtendedVariants.Entities.ForMappers {
 
         protected override bool GetNewValue(EntityData data) {
             if (toggle) {
-                return !(bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variantChange);
+                return !(bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variantChange);
             }
 
             return data.Bool("newValue");

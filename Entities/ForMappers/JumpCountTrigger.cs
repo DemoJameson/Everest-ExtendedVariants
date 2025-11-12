@@ -30,9 +30,9 @@ namespace ExtendedVariants.Entities.ForMappers {
                 return;
             }
 
-            int oldJumpCount = (int) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(Variant.JumpCount);
+            int oldJumpCount = (int) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(Variant.JumpCount);
             baseAction();
-            int newJumpCount = (int) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(Variant.JumpCount);
+            int newJumpCount = (int) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(Variant.JumpCount);
 
             if (oldJumpCount != newJumpCount) {
                 Logger.Log(LogLevel.Debug, "ExtendedVariantMode/JumpCountTrigger", $"Detected change in jump count ({oldJumpCount} => {newJumpCount}): capping jump count!");

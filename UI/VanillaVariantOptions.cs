@@ -170,7 +170,7 @@ namespace ExtendedVariants.UI {
             TextMenuExt.Slider speed;
             menu.Add(speed = new TextMenuExt.Slider(Dialog.Clean("MENU_ASSIST_GAMESPEED"), (int i) => i * 10 + "%", 5, Math.Max(max, SaveData.Instance.Assists.GameSpeed),
                 SaveData.Instance.Assists.GameSpeed, 5,
-                (int) ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(Variant.VanillaGameSpeed) - 5));
+                (int) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(Variant.VanillaGameSpeed) - 5));
 
             speed.Change(i => {
                 if (i > 10) {
@@ -191,7 +191,7 @@ namespace ExtendedVariants.UI {
                 0, 2,
                 (int) SaveData.Instance.Assists.DashMode,
                 0,
-                (int) ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(Variant.AirDashes)
+                (int) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(Variant.AirDashes)
             ).Change(i => SetVariantValue(Variant.AirDashes, (Assists.DashModes) i)));
 
             if (self.Session.Area.ID == 0) {
@@ -202,7 +202,7 @@ namespace ExtendedVariants.UI {
         private static TextMenuExt.OnOff getToggleOption(Variant variant, string variantName, bool variantValue, int isaVariantIndex) {
             // only read the extended variants-defined value if Isa's grab bag did not set anything on its end.
             bool mapDefinedVariantValue = activeIsaVariants[isaVariantIndex] ??
-                (bool) ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(variant);
+                (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(variant);
 
             return (TextMenuExt.OnOff) new TextMenuExt.OnOff(
                 Dialog.Clean(variantName),
@@ -214,7 +214,7 @@ namespace ExtendedVariants.UI {
 
         public static void SetVariantValue(Variant variantChange, object newValue) {
             if (Engine.Scene is Level) {
-                if (ExtendedVariantTriggerManager.AreValuesIdentical(newValue, ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(variantChange))) {
+                if (ExtendedVariantTriggerManager.AreValuesIdentical(newValue, ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(variantChange))) {
                     Logger.Log("ExtendedVariantsModule/ModOptionsEntries", $"Variant value {variantChange} = {newValue} was equal to the map-defined value, so it was removed from the overrides.");
                     ExtendedVariantsModule.Session.VariantsOverridenByUser.Remove(variantChange);
                 } else {

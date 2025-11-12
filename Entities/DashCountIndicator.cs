@@ -92,7 +92,7 @@ namespace ExtendedVariants.Entities {
                 }
 
                 // compute the jump count so that we can put the dash count above it.
-                int jumpIndicatorsToDraw = (int) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.JumpCount)
+                int jumpIndicatorsToDraw = (int) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.JumpCount)
                     == int.MaxValue ? 0 : JumpCount.GetJumpBuffer();
                 int jumpCountLines = jumpIndicatorsToDraw == 0 ? 0 : 1 + (jumpIndicatorsToDraw - 1) / 5;
 
@@ -123,7 +123,7 @@ namespace ExtendedVariants.Entities {
         }
 
         protected virtual bool ShouldShowCounter() {
-            return (bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplayDashCount);
+            return (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplayDashCount);
         }
 
         protected virtual float GetExtraOffset() {

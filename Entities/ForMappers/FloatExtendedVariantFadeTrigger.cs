@@ -25,7 +25,7 @@ namespace ExtendedVariants.Entities.ForMappers {
             base.OnStay(player);
 
             float targetValue = Calc.ClampedMap(GetPositionLerp(player, positionMode), 0, 1, valueA, valueB);
-            ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variantChange, targetValue, revertOnLeave: false, isFade: true, revertOnDeath, legacy: false);
+            ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variantChange, targetValue, revertOnLeave: false, isFade: true, revertOnDeath, legacy: false);
         }
     }
 }

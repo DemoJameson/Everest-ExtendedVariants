@@ -56,7 +56,7 @@ namespace ExtendedVariants.Entities.ForMappers {
 
         private bool checkTransitionAndWallUpOtherTransitions(Vector2 position) {
             Level level = SceneAs<Level>();
-            if ((bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.AllowLeavingTheoBehind)) {
+            if ((bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.AllowLeavingTheoBehind)) {
                 // don't wall up other transitions.
                 return level.Session.MapData.CanTransitionTo(level, position);
             }

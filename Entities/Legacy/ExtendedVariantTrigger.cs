@@ -62,7 +62,7 @@ namespace ExtendedVariants.Entities.Legacy {
             base.OnEnter(player);
 
             Action applyVariant = () =>
-                ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variantChange, newValue, revertOnLeave, isFade: false, revertOnDeath, isLegacy);
+                ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variantChange, newValue, revertOnLeave, isFade: false, revertOnDeath, isLegacy);
 
             if (withTeleport) {
                 OnTeleport += applyVariant;
@@ -75,7 +75,7 @@ namespace ExtendedVariants.Entities.Legacy {
             base.OnLeave(player);
 
             if (revertOnLeave) {
-                ExtendedVariantsModule.TriggerManager.OnExitedRevertOnLeaveTrigger(variantChange, newValue, isLegacy);
+                ExtendedVariantsModule.Instance.TriggerManager.OnExitedRevertOnLeaveTrigger(variantChange, newValue, isLegacy);
             }
         }
     }
