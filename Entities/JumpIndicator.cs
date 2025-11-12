@@ -13,10 +13,10 @@ namespace ExtendedVariants.Entities {
     /// </summary>
     [Tracked]
     public class JumpIndicator : Entity {
-        private const int normalDepth = (Depths.FGTerrain + Depths.FGDecals) / 2; // between fg tiles and fg decals
-        private const int depthInFrontOfSolids = Depths.FakeWalls - 1; // in front of fake walls
+        private const int NormalDepth = (Depths.FGTerrain + Depths.FGDecals) / 2; // between fg tiles and fg decals
+        private const int DepthInFrontOfSolids = Depths.FakeWalls - 1; // in front of fake walls
 
-        private static Type strawberrySeedIndicator = null;
+        private static Type strawberrySeedIndicator;
 
         public static void Initialize() {
             // extract a reference to the Max Helping Hand strawberry seed indicator.
@@ -27,7 +27,7 @@ namespace ExtendedVariants.Entities {
         }
 
         private ExtendedVariantsSettings settings;
-        private float invisibleJumpCountTimer = 0f;
+        private float invisibleJumpCountTimer;
 
         public JumpIndicator() {
             Depth = (Depths.FGTerrain + Depths.FGDecals) / 2; // between fg tiles and fg decals
@@ -46,15 +46,15 @@ namespace ExtendedVariants.Entities {
 
             // if the indicator overlaps with a solid that's in front of everything (exit blocks etc), send it in front of them.
             // otherwise, have it between fg decals and fg tiles
-            if (Collider != null && CollideAll<Solid>().Any(solid => solid.Depth < normalDepth)) {
-                Depth = depthInFrontOfSolids;
+            if (Collider != null && CollideAll<Solid>().Any(solid => solid.Depth < NormalDepth)) {
+                Depth = DepthInFrontOfSolids;
             } else {
-                Depth = normalDepth;
+                Depth = NormalDepth;
             }
 
             // hide jump count when infinite jumps are active, and show them again 0.1 second after turning infinite jumps off.
             // this avoids showing the jump count briefly on a transition between two rooms with infinite jumps and "revert on leave" enabled.
-            if ((int) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.JumpCount) == int.MaxValue) {
+            if ((int) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.JumpCount) == int.MaxValue) {
                 invisibleJumpCountTimer = 0.1f;
             } else if (invisibleJumpCountTimer > 0f) {
                 invisibleJumpCountTimer -= Engine.DeltaTime;
@@ -85,7 +85,7 @@ namespace ExtendedVariants.Entities {
                     int jumpIndicatorsToDrawOnLine = Math.Min(jumpIndicatorsToDraw, 5);
                     int totalWidth = jumpIndicatorsToDrawOnLine * 6 - 2;
                     for (int i = 0; i < jumpIndicatorsToDrawOnLine; i++) {
-                        Vector2 position = player.Center + new Vector2(-totalWidth / 2 + i * 6, -15f - line * 6 - offsetY);
+                        Vector2 position = player.Center + new Vector2(-totalWidth / 2f + i * 6, -15f - line * 6 - offsetY);
                         jumpIndicator.DrawJustified(new Vector2((float) Math.Round(position.X), (float) Math.Round(position.Y)), new Vector2(0f, 0.5f));
 
                         if (minX == float.MaxValue) {

@@ -9,11 +9,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class DontRefillDashOnGroundTrigger : AbstractExtendedVariantTrigger<DontRefillDashOnGround.DashRefillOnGroundConfiguration> {
         public DontRefillDashOnGroundTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.DontRefillDashOnGround;
         }
 
-        protected override DontRefillDashOnGround.DashRefillOnGroundConfiguration getNewValue(EntityData data) {
+        protected override DontRefillDashOnGround.DashRefillOnGroundConfiguration GetNewValue(EntityData data) {
             return data.Enum("newValue", DontRefillDashOnGround.DashRefillOnGroundConfiguration.DEFAULT);
         }
     }

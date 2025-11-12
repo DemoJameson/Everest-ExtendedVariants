@@ -22,7 +22,7 @@ namespace ExtendedVariants.Entities.ForMappers {
         public override void OnStay(Player player) {
             base.OnStay(player);
 
-            ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variantChange, slider.Value, revertOnLeave: false, isFade: true, revertOnDeath, legacy: false);
+            ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variantChange, slider.Value, revertOnLeave: false, isFade: true, revertOnDeath, legacy: false);
         }
     }
 }

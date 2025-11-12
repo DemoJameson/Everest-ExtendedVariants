@@ -9,11 +9,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class SpinnerColorTrigger : AbstractExtendedVariantTrigger<SpinnerColor.Color> {
         public SpinnerColorTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.SpinnerColor;
         }
 
-        protected override SpinnerColor.Color getNewValue(EntityData data) {
+        protected override SpinnerColor.Color GetNewValue(EntityData data) {
             return data.Enum("newValue", SpinnerColor.Color.Default);
         }
     }

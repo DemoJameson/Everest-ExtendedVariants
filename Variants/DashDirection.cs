@@ -1,10 +1,10 @@
 ﻿using Celeste;
+using ExtendedVariants.Module;
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using System.Collections;
 using MonoMod.RuntimeDetour;
 using System;
-using Celeste.Mod.EV;
 using static ExtendedVariants.Module.ExtendedVariantsModule;
 
 namespace ExtendedVariants.Variants {

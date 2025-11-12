@@ -1,7 +1,8 @@
+using Celeste.Mod;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Celeste.Mod.EV {
+namespace ExtendedVariants.Module {
     /**
      * Stolen from https://github.com/EverestAPI/Everest/pull/953
      * TODO: remove this once Everest hit stable

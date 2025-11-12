@@ -9,11 +9,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class MadelineBackpackModeTrigger : AbstractExtendedVariantTrigger<MadelineBackpackMode.MadelineBackpackModes> {
         public MadelineBackpackModeTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.MadelineBackpackMode;
         }
 
-        protected override MadelineBackpackMode.MadelineBackpackModes getNewValue(EntityData data) {
+        protected override MadelineBackpackMode.MadelineBackpackModes GetNewValue(EntityData data) {
             return data.Enum("newValue", MadelineBackpackMode.MadelineBackpackModes.Default);
         }
     }

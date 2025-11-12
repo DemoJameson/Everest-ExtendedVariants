@@ -62,7 +62,7 @@ namespace ExtendedVariants {
                 Logger.Log(LogLevel.Info, "ExtendedVariantMode/VariantRandomizer", $"Variant randomizer seed is: [{setSeedString}] => {setSeed}");
 
                 randomGenerator = new Random(setSeed);
-                foreach (AbstractExtendedVariant variant in ExtendedVariantsModule.Instance.VariantHandlers.Values) {
+                foreach (AbstractExtendedVariant variant in ExtendedVariantsModule.VariantHandlers.Values) {
                     variant.SetRandomSeed(setSeed);
                 }
             }
@@ -183,14 +183,14 @@ namespace ExtendedVariants {
             // get filtered lists for changeable variants, and those which are enabled
             IEnumerable<ExtendedVariantsModule.Variant> changeableVanillaVariants = new List<ExtendedVariantsModule.Variant>();
             if (SaveData.Instance.VariantMode && ExtendedVariantsModule.Settings.VariantSet % 2 == 1)
-                changeableVanillaVariants = ExtendedVariantsModule.Instance.VariantHandlers.Keys
-                    .Where(variant => ExtendedVariantsModule.Instance.VariantHandlers[variant] is AbstractVanillaVariant &&
+                changeableVanillaVariants = ExtendedVariantsModule.VariantHandlers.Keys
+                    .Where(variant => ExtendedVariantsModule.VariantHandlers[variant] is AbstractVanillaVariant &&
                         (ExtendedVariantsModule.Settings.RandomizerEnabledVariants.TryGetValue(variant.ToString(), out bool enabled) ? enabled : true));
 
             IEnumerable<ExtendedVariantsModule.Variant> changeableExtendedVariants = new List<ExtendedVariantsModule.Variant>();
             if (ExtendedVariantsModule.Settings.VariantSet / 2 == 1)
-                changeableExtendedVariants = ExtendedVariantsModule.Instance.VariantHandlers.Keys
-                    .Where(variant => ExtendedVariantsModule.Instance.VariantHandlers[variant] is not AbstractVanillaVariant &&
+                changeableExtendedVariants = ExtendedVariantsModule.VariantHandlers.Keys
+                    .Where(variant => ExtendedVariantsModule.VariantHandlers[variant] is not AbstractVanillaVariant &&
                         (ExtendedVariantsModule.Settings.RandomizerEnabledVariants.TryGetValue(variant.ToString(), out bool enabled) ? enabled : true));
 
             IEnumerable<ExtendedVariantsModule.Variant> enabledVanillaVariants = changeableVanillaVariants.Where(variant => !isDefaultValue(variant));
@@ -263,12 +263,12 @@ namespace ExtendedVariants {
         }
 
         private bool isDefaultValue(ExtendedVariantsModule.Variant variant) {
-            AbstractExtendedVariant variantHandler = ExtendedVariantsModule.Instance.VariantHandlers[variant];
+            AbstractExtendedVariant variantHandler = ExtendedVariantsModule.VariantHandlers[variant];
             if (variantHandler is AbstractVanillaVariant vanillaVariantHandler) {
                 return vanillaVariantHandler.IsSetToDefaultByPlayer();
             } else {
                 return ExtendedVariantTriggerManager.AreValuesIdentical(
-                    ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variant),
+                    ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variant),
                     variantHandler.GetDefaultVariantValue());
             }
         }
@@ -276,14 +276,14 @@ namespace ExtendedVariants {
         private void disableVariant(ExtendedVariantsModule.Variant variant) {
             Logger.Log(LogLevel.Info, "ExtendedVariantMode/VariantRandomizer", $"Disabling variant {variant.ToString()}");
 
-            AbstractExtendedVariant variantHandler = ExtendedVariantsModule.Instance.VariantHandlers[variant];
+            AbstractExtendedVariant variantHandler = ExtendedVariantsModule.VariantHandlers[variant];
             setVariantValue(variant, variantHandler.GetDefaultVariantValue());
         }
 
         private void enableVariant(ExtendedVariantsModule.Variant variant) {
             Logger.Log(LogLevel.Info, "ExtendedVariantMode/VariantRandomizer", $"Enabling variant {variant.ToString()}");
 
-            AbstractExtendedVariant extendedVariant = ExtendedVariantsModule.Instance.VariantHandlers[variant];
+            AbstractExtendedVariant extendedVariant = ExtendedVariantsModule.VariantHandlers[variant];
 
             if (variant == ExtendedVariantsModule.Variant.DashDirection) {
                 // random between "diagonals only" and "no diagonals"
@@ -372,7 +372,7 @@ namespace ExtendedVariants {
         }
 
         private void setVariantValue(ExtendedVariantsModule.Variant variant, object value) {
-            if (ExtendedVariantsModule.Instance.VariantHandlers[variant] is AbstractVanillaVariant) {
+            if (ExtendedVariantsModule.VariantHandlers[variant] is AbstractVanillaVariant) {
                 VanillaVariantOptions.SetVariantValue(variant, value);
             } else {
                 ModOptionsEntries.SetVariantValue(variant, value);
@@ -398,13 +398,13 @@ namespace ExtendedVariants {
         public void RefreshEnabledVariantsDisplayList() {
             bool listShown = shouldDisplayEnabledVariantsOnScreen();
 
-            IEnumerable<ExtendedVariantsModule.Variant> enabledVanillaVariants = ExtendedVariantsModule.Instance.VariantHandlers.Keys
-                .Where(variant => ExtendedVariantsModule.Instance.VariantHandlers[variant] is AbstractVanillaVariant
+            IEnumerable<ExtendedVariantsModule.Variant> enabledVanillaVariants = ExtendedVariantsModule.VariantHandlers.Keys
+                .Where(variant => ExtendedVariantsModule.VariantHandlers[variant] is AbstractVanillaVariant
                         && (listShown || VariantsIndicator.WatermarkedVariants.Contains(variant))
                         && !isDefaultValue(variant));
 
-            IEnumerable<ExtendedVariantsModule.Variant> enabledExtendedVariants = ExtendedVariantsModule.Instance.VariantHandlers.Keys
-                .Where(variant => ExtendedVariantsModule.Instance.VariantHandlers[variant] is not AbstractVanillaVariant
+            IEnumerable<ExtendedVariantsModule.Variant> enabledExtendedVariants = ExtendedVariantsModule.VariantHandlers.Keys
+                .Where(variant => ExtendedVariantsModule.VariantHandlers[variant] is not AbstractVanillaVariant
                         && (listShown || VariantsIndicator.WatermarkedVariants.Contains(variant))
                         && !isDefaultValue(variant));
 
@@ -426,9 +426,9 @@ namespace ExtendedVariants {
 
             foreach (ExtendedVariantsModule.Variant variant in enabledExtendedVariants) {
                 string variantName = Dialog.Clean($"MODOPTIONS_EXTENDEDVARIANTS_{variant}");
-                Type variantType = ExtendedVariantsModule.Instance.VariantHandlers[variant].GetVariantType();
-                object variantValue = ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variant);
-                object defaultValue = ExtendedVariantsModule.Instance.VariantHandlers[variant].GetDefaultVariantValue();
+                Type variantType = ExtendedVariantsModule.VariantHandlers[variant].GetVariantType();
+                object variantValue = ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variant);
+                object defaultValue = ExtendedVariantsModule.VariantHandlers[variant].GetDefaultVariantValue();
 
                 if (variant == ExtendedVariantsModule.Variant.DashDirection) {
                     enabledVariantsToDisplay.Add($"{variantName}: {Dialog.Clean($"MODOPTIONS_EXTENDEDVARIANTS_DASHDIRECTION_{ModOptionsEntries.GetDashDirectionIndex((bool[][]) variantValue)}")}");

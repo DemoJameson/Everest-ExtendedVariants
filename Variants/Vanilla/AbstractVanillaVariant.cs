@@ -119,10 +119,10 @@ namespace ExtendedVariants.Variants.Vanilla {
         private Assists applyAssists(Assists target, out bool updated) {
             updated = false;
 
-            foreach (KeyValuePair<ExtendedVariantsModule.Variant, AbstractExtendedVariant> variant in ExtendedVariantsModule.Instance.VariantHandlers) {
+            foreach (KeyValuePair<ExtendedVariantsModule.Variant, AbstractExtendedVariant> variant in ExtendedVariantsModule.VariantHandlers) {
                 if (!(variant.Value is AbstractVanillaVariant vanillaVariant)) continue;
 
-                object value = ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(variant.Key);
+                object value = ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(variant.Key);
                 if (!ExtendedVariantsModule.Session.VariantsOverridenByUser.Contains(variant.Key)
                     && !ExtendedVariantTriggerManager.AreValuesIdentical(value, vanillaVariant.GetDefaultVariantValue())) {
 

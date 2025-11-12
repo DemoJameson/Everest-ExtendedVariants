@@ -8,11 +8,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class ColorGradeTrigger : AbstractExtendedVariantTrigger<string> {
         public ColorGradeTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.ColorGrading;
         }
 
-        protected override string getNewValue(EntityData data) {
+        protected override string GetNewValue(EntityData data) {
             return data.Attr("colorGrade", "none");
         }
     }

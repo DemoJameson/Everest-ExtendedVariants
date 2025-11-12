@@ -9,11 +9,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class DisableClimbingUpOrDownTrigger : AbstractExtendedVariantTrigger<DisableClimbingUpOrDown.ClimbUpOrDownOptions> {
         public DisableClimbingUpOrDownTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.DisableClimbingUpOrDown;
         }
 
-        protected override DisableClimbingUpOrDown.ClimbUpOrDownOptions getNewValue(EntityData data) {
+        protected override DisableClimbingUpOrDown.ClimbUpOrDownOptions GetNewValue(EntityData data) {
             return data.Enum("newValue", DisableClimbingUpOrDown.ClimbUpOrDownOptions.Disabled);
         }
     }

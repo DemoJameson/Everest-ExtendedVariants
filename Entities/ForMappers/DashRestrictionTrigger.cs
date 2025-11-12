@@ -11,11 +11,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class DashRestrictionTrigger : AbstractExtendedVariantTrigger<DashRestrictionType> {
         public DashRestrictionTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override Variant getVariant(EntityData data) {
+        protected override Variant GetVariant(EntityData data) {
             return Variant.DashRestriction;
         }
 
-        protected override DashRestrictionType getNewValue(EntityData data) {
+        protected override DashRestrictionType GetNewValue(EntityData data) {
             return data.Enum("newValue", DashRestrictionType.None);
         }
     }

@@ -8,11 +8,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class AirDashesTrigger : AbstractExtendedVariantTrigger<Assists.DashModes> {
         public AirDashesTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.AirDashes;
         }
 
-        protected override Assists.DashModes getNewValue(EntityData data) {
+        protected override Assists.DashModes GetNewValue(EntityData data) {
             return data.Enum("newValue", Assists.DashModes.Normal);
         }
     }

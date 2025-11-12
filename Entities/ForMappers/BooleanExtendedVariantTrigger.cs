@@ -11,13 +11,13 @@ namespace ExtendedVariants.Entities.ForMappers {
         private readonly bool toggle;
 
         public BooleanExtendedVariantTrigger(EntityData data, Vector2 offset) : base(data, offset) {
-            variantChange = getVariant(data);
+            variantChange = GetVariant(data);
             toggle = data.Bool("toggle");
         }
 
-        protected override bool getNewValue(EntityData data) {
+        protected override bool GetNewValue(EntityData data) {
             if (toggle) {
-                return !(bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variantChange);
+                return !(bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variantChange);
             }
 
             return data.Bool("newValue");

@@ -8,7 +8,7 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class IntegerExtendedVariantTrigger : AbstractExtendedVariantTrigger<int> {
         public IntegerExtendedVariantTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override int getNewValue(EntityData data) {
+        protected override int GetNewValue(EntityData data) {
             return data.Int("newValue");
         }
     }

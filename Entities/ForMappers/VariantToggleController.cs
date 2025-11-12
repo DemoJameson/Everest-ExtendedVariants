@@ -25,12 +25,12 @@ namespace ExtendedVariants.Entities.ForMappers {
             : base(position) {
             flag = flagName;
             defaultValue = defValue;
-            variantValues = ParseParameterList(variantList);
+            variantValues = parseParameterList(variantList);
         }
 
         public override void Update() {
             base.Update();
-            UpdateFlag();
+            updateFlag();
         }
 
         public override void Awake(Scene scene) {
@@ -38,32 +38,32 @@ namespace ExtendedVariants.Entities.ForMappers {
             if (!string.IsNullOrEmpty(flag)) {
                 SceneAs<Level>().Session.SetFlag(flag, defaultValue);
             }
-            UpdateVariants();
+            updateVariants();
         }
 
-        private void UpdateVariants() {
+        private void updateVariants() {
             if (isFlagged) {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, object> variant in variantValues) {
-                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, variant.Value, false, false, false, false);
+                    ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variant.Key, variant.Value, false, false, false, false);
                 }
             } else {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, object> variant in variantValues) {
-                    object defaultValue = ExtendedVariantTriggerManager.GetDefaultValueForVariant(variant.Key);
-                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, defaultValue, false, false, false, false);
+                    object defaultValueForVariant = ExtendedVariantTriggerManager.GetDefaultValueForVariant(variant.Key);
+                    ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variant.Key, defaultValueForVariant, false, false, false, false);
                 }
             }
         }
 
-        private void UpdateFlag() {
+        private void updateFlag() {
             if (string.IsNullOrEmpty(flag) || (isFlagged == SceneAs<Level>().Session.GetFlag(flag))) {
                 return;
             }
 
             isFlagged = SceneAs<Level>().Session.GetFlag(flag);
-            UpdateVariants();
+            updateVariants();
         }
 
-        private static Dictionary<ExtendedVariantsModule.Variant, object> ParseParameterList(string list) {
+        private static Dictionary<ExtendedVariantsModule.Variant, object> parseParameterList(string list) {
             Dictionary<ExtendedVariantsModule.Variant, object> variantList = new Dictionary<ExtendedVariantsModule.Variant, object>();
             if (string.IsNullOrEmpty(list)) {
                 return variantList;
@@ -75,15 +75,15 @@ namespace ExtendedVariants.Entities.ForMappers {
                 string[] variantKeyValue = keyValue.Split(':');
                 if (variantKeyValue.Length >= 2) {
                     ExtendedVariantsModule.Variant variant = (ExtendedVariantsModule.Variant) Enum.Parse(typeof(ExtendedVariantsModule.Variant), variantKeyValue[0]);
-                    variantList[variant] = ParseParameterValue(variant, variantKeyValue[1]);
+                    variantList[variant] = parseParameterValue(variant, variantKeyValue[1]);
                 }
             }
 
             return variantList;
         }
 
-        private static object ParseParameterValue(ExtendedVariantsModule.Variant variant, string value) {
-            Type type = ExtendedVariantsModule.Instance.VariantHandlers[variant].GetVariantType();
+        private static object parseParameterValue(ExtendedVariantsModule.Variant variant, string value) {
+            Type type = ExtendedVariantsModule.VariantHandlers[variant].GetVariantType();
 
             if (type == typeof(string)) {
                 return value;
@@ -99,10 +99,10 @@ namespace ExtendedVariants.Entities.ForMappers {
 
             } else if (type == typeof(bool[][])) {
                 string[] split = value.Split(',');
-                return new bool[][] {
-                    new bool[] { bool.Parse(split[0]),bool.Parse(split[1]),bool.Parse(split[2]) },
-                    new bool[] { bool.Parse(split[3]),bool.Parse(split[4]),bool.Parse(split[5]) },
-                    new bool[] { bool.Parse(split[6]),bool.Parse(split[7]),bool.Parse(split[8]) }
+                return new[] {
+                    new[] { bool.Parse(split[0]),bool.Parse(split[1]),bool.Parse(split[2]) },
+                    new[] { bool.Parse(split[3]),bool.Parse(split[4]),bool.Parse(split[5]) },
+                    new[] { bool.Parse(split[6]),bool.Parse(split[7]),bool.Parse(split[8]) }
                 };
 
             } else if (type == typeof(DisplaySpeedometer.SpeedometerConfiguration)) {

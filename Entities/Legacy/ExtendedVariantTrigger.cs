@@ -14,7 +14,7 @@ namespace ExtendedVariants.Entities.Legacy {
         // === hook on teleport to sync up a variant change with a teleport
         // since all teleport triggers call UnloadLevel(), we can hook that to detect the instant the teleport happens at.
 
-        private static event Action onTeleport;
+        private static event Action OnTeleport;
 
         public static void Load() {
             On.Celeste.Level.UnloadLevel += onUnloadLevel;
@@ -22,13 +22,13 @@ namespace ExtendedVariants.Entities.Legacy {
 
         public static void Unload() {
             On.Celeste.Level.UnloadLevel -= onUnloadLevel;
-            onTeleport = null;
+            OnTeleport = null;
         }
 
         private static void onUnloadLevel(On.Celeste.Level.orig_UnloadLevel orig, Level self) {
-            if (onTeleport != null) {
-                onTeleport();
-                onTeleport = null;
+            if (OnTeleport != null) {
+                OnTeleport();
+                OnTeleport = null;
             }
 
             orig(self);
@@ -47,9 +47,9 @@ namespace ExtendedVariants.Entities.Legacy {
             // parse the trigger parameters
             variantChange = data.Enum("variantChange", ExtendedVariantsModule.Variant.Gravity);
             newValue = data.Int("newValue", 10);
-            revertOnLeave = data.Bool("revertOnLeave", false);
+            revertOnLeave = data.Bool("revertOnLeave");
             revertOnDeath = data.Bool("revertOnDeath", true);
-            withTeleport = data.Bool("withTeleport", false);
+            withTeleport = data.Bool("withTeleport");
 
             if (!data.Bool("enable", true)) {
                 // "disabling" a variant is actually just resetting its value to default
@@ -62,10 +62,10 @@ namespace ExtendedVariants.Entities.Legacy {
             base.OnEnter(player);
 
             Action applyVariant = () =>
-                ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variantChange, newValue, revertOnLeave, isFade: false, revertOnDeath, isLegacy);
+                ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variantChange, newValue, revertOnLeave, isFade: false, revertOnDeath, isLegacy);
 
             if (withTeleport) {
-                onTeleport += applyVariant;
+                OnTeleport += applyVariant;
             } else {
                 applyVariant();
             }
@@ -75,7 +75,7 @@ namespace ExtendedVariants.Entities.Legacy {
             base.OnLeave(player);
 
             if (revertOnLeave) {
-                ExtendedVariantsModule.Instance.TriggerManager.OnExitedRevertOnLeaveTrigger(variantChange, newValue, isLegacy);
+                ExtendedVariantsModule.TriggerManager.OnExitedRevertOnLeaveTrigger(variantChange, newValue, isLegacy);
             }
         }
     }

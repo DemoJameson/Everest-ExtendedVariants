@@ -1,6 +1,5 @@
 ﻿using Celeste.Mod;
 using System.Collections.Generic;
-using YamlDotNet.Serialization;
 
 namespace ExtendedVariants.Module {
     public class ExtendedVariantsSession : EverestModuleSession {

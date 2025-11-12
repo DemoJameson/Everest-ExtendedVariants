@@ -9,11 +9,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class DisplaySpeedometerTrigger : AbstractExtendedVariantTrigger<DisplaySpeedometer.SpeedometerConfiguration> {
         public DisplaySpeedometerTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.DisplaySpeedometer;
         }
 
-        protected override DisplaySpeedometer.SpeedometerConfiguration getNewValue(EntityData data) {
+        protected override DisplaySpeedometer.SpeedometerConfiguration GetNewValue(EntityData data) {
             return data.Enum("newValue", DisplaySpeedometer.SpeedometerConfiguration.DISABLED);
         }
     }

@@ -2,11 +2,10 @@
 using Monocle;
 using MonoMod.Utils;
 using NLua;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace ExtendedVariants {
+namespace ExtendedVariants.Module {
     // a leak prevention patch that's way too hacky to have its place in Everest.
     // instead of fixing the root issue, it tries to mitigate it by making NLua forget about any entity that isn't in the scene anymore.
     public static class LeakPreventionHack {
@@ -22,7 +21,7 @@ namespace ExtendedVariants {
                 nluaObjectTranslator = new DynData<Lua>(Everest.LuaLoader.Context).Get<ObjectTranslator>("_translator");
                 nluaReferenceMap = new DynData<ObjectTranslator>(nluaObjectTranslator).Get<Dictionary<object, int>>("_objectsBackMap");
                 nluaCollectObject = typeof(ObjectTranslator).GetMethod("CollectObject", BindingFlags.NonPublic | BindingFlags.Instance, null,
-                    CallingConventions.Any, new Type[] { typeof(int) }, null);
+                    CallingConventions.Any, [typeof(int)], null);
             }
         }
 

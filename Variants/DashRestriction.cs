@@ -27,7 +27,7 @@ namespace ExtendedVariants.Variants {
         }
 
         private static bool modCanDash(Func<Player, bool> orig, Player self) {
-            DashRestrictionType dashRestrictionType = (DashRestrictionType) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(
+            DashRestrictionType dashRestrictionType = (DashRestrictionType) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(
                 ExtendedVariantsModule.Variant.DashRestriction
             );
 

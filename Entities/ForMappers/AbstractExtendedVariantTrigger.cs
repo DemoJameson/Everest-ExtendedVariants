@@ -10,7 +10,7 @@ namespace ExtendedVariants.Entities.ForMappers {
         // since all teleport triggers call UnloadLevel(), we can hook that to detect the instant the teleport happens at.
         // this is in a separate class because we don't want it for each generic type.
 
-        internal static event Action onTeleport;
+        internal static event Action OnTeleport;
 
         public static void Load() {
             On.Celeste.Level.UnloadLevel += onUnloadLevel;
@@ -18,13 +18,13 @@ namespace ExtendedVariants.Entities.ForMappers {
 
         public static void Unload() {
             On.Celeste.Level.UnloadLevel -= onUnloadLevel;
-            onTeleport = null;
+            OnTeleport = null;
         }
 
         private static void onUnloadLevel(On.Celeste.Level.orig_UnloadLevel orig, Level self) {
-            if (onTeleport != null) {
-                onTeleport();
-                onTeleport = null;
+            if (OnTeleport != null) {
+                OnTeleport();
+                OnTeleport = null;
             }
 
             orig(self);
@@ -44,14 +44,14 @@ namespace ExtendedVariants.Entities.ForMappers {
 
         public AbstractExtendedVariantTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             // parse the trigger parameters
-            variantChange = getVariant(data);
-            newValueGetter = () => getNewValue(data);
-            revertOnLeave = data.Bool("revertOnLeave", false);
+            variantChange = GetVariant(data);
+            newValueGetter = () => GetNewValue(data);
+            revertOnLeave = data.Bool("revertOnLeave");
             revertOnDeath = data.Bool("revertOnDeath", true);
-            delayRevertOnDeath = data.Bool("delayRevertOnDeath", false);
-            withTeleport = data.Bool("withTeleport", false);
-            coversScreen = data.Bool("coversScreen", false);
-            onlyOnce = data.Bool("onlyOnce", false);
+            delayRevertOnDeath = data.Bool("delayRevertOnDeath");
+            withTeleport = data.Bool("withTeleport");
+            coversScreen = data.Bool("coversScreen");
+            onlyOnce = data.Bool("onlyOnce");
 
             if (!data.Bool("enable", true)) {
                 // "disabling" a variant is actually just resetting its value to default
@@ -69,7 +69,7 @@ namespace ExtendedVariants.Entities.ForMappers {
         public override void Added(Scene scene) {
             base.Added(scene);
 
-            Rectangle bounds = (scene as Level).Bounds;
+            Rectangle bounds = SceneAs<Level>().Bounds;
 
             // this is a replacement for the Extended Variant Controller.
             if (coversScreen) {
@@ -80,23 +80,23 @@ namespace ExtendedVariants.Entities.ForMappers {
             }
         }
 
-        protected virtual ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected virtual ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return data.Enum("variantChange", ExtendedVariantsModule.Variant.Gravity);
         }
 
-        protected abstract T getNewValue(EntityData data);
+        protected abstract T GetNewValue(EntityData data);
 
         public override void OnEnter(Player player) {
             base.OnEnter(player);
 
             Action applyVariant = () => {
                 T value = newValueGetter();
-                ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variantChange, value, revertOnLeave, isFade: false, revertOnDeath, legacy: false);
+                ExtendedVariantsModule.TriggerManager.OnEnteredInTrigger(variantChange, value, revertOnLeave, isFade: false, revertOnDeath, legacy: false);
                 valueToRevertOnLeave = value;
             };
 
             if (withTeleport) {
-                AbstractExtendedVariantTriggerTeleportHandler.onTeleport += applyVariant;
+                AbstractExtendedVariantTriggerTeleportHandler.OnTeleport += applyVariant;
             } else {
                 applyVariant();
             }
@@ -110,7 +110,7 @@ namespace ExtendedVariants.Entities.ForMappers {
             base.OnLeave(player);
 
             if (revertOnLeave && (!delayRevertOnDeath || !player.Dead)) {
-                ExtendedVariantsModule.Instance.TriggerManager.OnExitedRevertOnLeaveTrigger(variantChange, valueToRevertOnLeave, legacy: false);
+                ExtendedVariantsModule.TriggerManager.OnExitedRevertOnLeaveTrigger(variantChange, valueToRevertOnLeave, legacy: false);
             }
         }
 

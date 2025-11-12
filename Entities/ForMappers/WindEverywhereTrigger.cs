@@ -9,11 +9,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class WindEverywhereTrigger : AbstractExtendedVariantTrigger<WindEverywhere.WindPattern> {
         public WindEverywhereTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.WindEverywhere;
         }
 
-        protected override WindEverywhere.WindPattern getNewValue(EntityData data) {
+        protected override WindEverywhere.WindPattern GetNewValue(EntityData data) {
             return data.Enum("newValue", WindEverywhere.WindPattern.Default);
         }
     }

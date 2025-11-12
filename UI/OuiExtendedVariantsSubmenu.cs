@@ -1,6 +1,6 @@
 ﻿using Celeste;
-using Celeste.Mod.EV;
 using Celeste.Mod.UI;
+using ExtendedVariants.Module;
 using System.Collections;
 
 namespace ExtendedVariants.UI {

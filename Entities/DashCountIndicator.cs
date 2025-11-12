@@ -13,17 +13,17 @@ namespace ExtendedVariants.Entities {
     /// An indicator for the dash count (numbers above Madeline's head).
     /// </summary>
     public class DashCountIndicator : Entity {
-        private const int normalDepth = (Depths.FGTerrain + Depths.FGDecals) / 2; // between fg tiles and fg decals
-        private const int depthInFrontOfSolids = Depths.FakeWalls - 1; // in front of fake walls
+        private const int NormalDepth = (Depths.FGTerrain + Depths.FGDecals) / 2; // between fg tiles and fg decals
+        private const int DepthInFrontOfSolids = Depths.FakeWalls - 1; // in front of fake walls
 
         // dash count is hidden during intros and cutscenes, when player doesn't have control.
-        private static readonly HashSet<int> hiddenPlayerStates = new HashSet<int> { Player.StIntroJump, Player.StIntroMoonJump, Player.StIntroRespawn,
+        private static readonly HashSet<int> HiddenPlayerStates = new HashSet<int> { Player.StIntroJump, Player.StIntroMoonJump, Player.StIntroRespawn,
             Player.StIntroThinkForABit, Player.StIntroWakeUp, Player.StIntroWalk, Player.StReflectionFall, Player.StDummy };
 
         private static MTexture[] numbers;
-        protected ExtendedVariantsSettings settings;
+        private readonly ExtendedVariantsSettings settings;
 
-        private static Type strawberrySeedIndicator = null;
+        private static Type strawberrySeedIndicator;
 
         public static void Initialize() {
             // extract numbers from the PICO-8 font that ships with the game.
@@ -60,15 +60,15 @@ namespace ExtendedVariants.Entities {
 
             // if the indicator overlaps with a solid that's in front of everything (exit blocks etc), send it in front of them.
             // otherwise, have it between fg decals and fg tiles
-            if (Collider != null && CollideAll<Solid>().Any(solid => solid.Depth < normalDepth)) {
-                Depth = depthInFrontOfSolids;
+            if (Collider != null && CollideAll<Solid>().Any(solid => solid.Depth < NormalDepth)) {
+                Depth = DepthInFrontOfSolids;
             } else {
-                Depth = normalDepth;
+                Depth = NormalDepth;
             }
         }
 
         public override void Render() {
-            if (!shouldShowCounter()) {
+            if (!ShouldShowCounter()) {
                 // hide the dash count.
                 return;
             }
@@ -82,25 +82,25 @@ namespace ExtendedVariants.Entities {
             if (strawberrySeedIndicator != null && Scene.Tracker.Entities[strawberrySeedIndicator].Count > 0) {
                 offsetY = 8f;
             }
-            offsetY += getExtraOffset();
+            offsetY += GetExtraOffset();
 
             Player player = Scene.Tracker.GetEntity<Player>();
             if (player != null) {
-                if (hiddenPlayerStates.Contains(player.StateMachine.State)) {
+                if (HiddenPlayerStates.Contains(player.StateMachine.State)) {
                     // the player is in one of the states that should have the dash count hidden.
                     return;
                 }
 
                 // compute the jump count so that we can put the dash count above it.
-                int jumpIndicatorsToDraw = (int) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.JumpCount)
+                int jumpIndicatorsToDraw = (int) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.JumpCount)
                     == int.MaxValue ? 0 : JumpCount.GetJumpBuffer();
                 int jumpCountLines = jumpIndicatorsToDraw == 0 ? 0 : 1 + (jumpIndicatorsToDraw - 1) / 5;
 
                 // draw Madeline's dash count, digit by digit.
-                string number = getNumberToDisplay(player);
+                string number = GetNumberToDisplay(player);
                 int totalWidth = number.Length * 4 - 1;
                 for (int i = 0; i < number.Length; i++) {
-                    Vector2 position = player.Center + new Vector2(-totalWidth / 2 + i * 4, -18f - jumpCountLines * 6f - offsetY);
+                    Vector2 position = player.Center + new Vector2(-totalWidth / 2f + i * 4, -18f - jumpCountLines * 6f - offsetY);
                     numbers[number.ToCharArray()[i] - '0'].DrawOutline(position, new Vector2(0f, 0.5f));
 
                     if (minX == float.MaxValue) {
@@ -122,15 +122,15 @@ namespace ExtendedVariants.Entities {
             }
         }
 
-        protected virtual bool shouldShowCounter() {
-            return (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplayDashCount);
+        protected virtual bool ShouldShowCounter() {
+            return (bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplayDashCount);
         }
 
-        protected virtual float getExtraOffset() {
+        protected virtual float GetExtraOffset() {
             return 0f;
         }
 
-        protected virtual string getNumberToDisplay(Player player) {
+        protected virtual string GetNumberToDisplay(Player player) {
             return player.Dashes.ToString();
         }
     }

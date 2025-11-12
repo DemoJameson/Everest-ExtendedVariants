@@ -4,8 +4,6 @@ using ExtendedVariants.Module;
 
 namespace ExtendedVariants.Entities {
     public class AutoDestroyingSnowball : Snowball {
-        public AutoDestroyingSnowball() : base() { }
-
         public override void Update() {
             base.Update();
 

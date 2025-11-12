@@ -96,9 +96,9 @@ namespace ExtendedVariants.UI {
 
         private TextMenuOptionExt<int> getScaleOption<T>(Variant variant, string suffix, T[] scale, Func<T, string> formatter = null) where T : IComparable {
             return getNonVariantScaleOption<T>(variant.ToString(), suffix, scale,
-                currentValue: (T) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variant),
-                mapDefinedValue: (T) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(variant),
-                defaultValue: (T) ExtendedVariantsModule.Instance.VariantHandlers[variant].GetDefaultVariantValue(),
+                currentValue: (T) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variant),
+                mapDefinedValue: (T) ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(variant),
+                defaultValue: (T) ExtendedVariantsModule.VariantHandlers[variant].GetDefaultVariantValue(),
                 valueSetter: newValue => setVariantValue(variant, newValue),
                 formatter);
         }
@@ -166,9 +166,9 @@ namespace ExtendedVariants.UI {
         private TextMenuExt.OnOff getToggleOption(Variant variant) {
             return (TextMenuExt.OnOff) new TextMenuExt.OnOff(
                     Dialog.Clean($"modoptions_extendedvariants_{variant}"),
-                    (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variant),
-                    (bool) ExtendedVariantsModule.Instance.VariantHandlers[variant].GetDefaultVariantValue(),
-                    (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(variant))
+                    (bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variant),
+                    (bool) ExtendedVariantsModule.VariantHandlers[variant].GetDefaultVariantValue(),
+                    (bool) ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(variant))
                 .Change(b => setVariantValue(variant, b));
         }
 
@@ -176,7 +176,7 @@ namespace ExtendedVariants.UI {
             bool mapDefaultValue = false;
 
             if (Engine.Scene is Level) {
-                if (ExtendedVariantTriggerManager.AreValuesIdentical(newValue, ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(variantChange))) {
+                if (ExtendedVariantTriggerManager.AreValuesIdentical(newValue, ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(variantChange))) {
                     Logger.Log("ExtendedVariantsModule/ModOptionsEntries", $"Variant value {variantChange} = {newValue} was equal to the map-defined value, so it was removed from the overrides and from the settings.");
                     ExtendedVariantsModule.Session.VariantsOverridenByUser.Remove(variantChange);
                     ExtendedVariantsModule.Settings.EnabledVariants.Remove(variantChange);
@@ -197,8 +197,8 @@ namespace ExtendedVariants.UI {
                 }
             }
 
-            ExtendedVariantsModule.Instance.VariantHandlers[variantChange].VariantValueChanged();
-            ExtendedVariantsModule.Instance.Randomizer.RefreshEnabledVariantsDisplayList();
+            ExtendedVariantsModule.VariantHandlers[variantChange].VariantValueChanged();
+            ExtendedVariantsModule.Randomizer.RefreshEnabledVariantsDisplayList();
         }
 
         private void setVariantValue(Variant variantChange, object newValue) {
@@ -220,19 +220,19 @@ namespace ExtendedVariants.UI {
             bool hasMapDefinedVariants = false;
 
             foreach (Variant variant in variants) {
-                if (!ExtendedVariantsModule.Instance.VariantHandlers.ContainsKey(variant)) {
+                if (!ExtendedVariantsModule.VariantHandlers.ContainsKey(variant)) {
                     continue;
                 }
 
                 if (!ExtendedVariantTriggerManager.AreValuesIdentical(
-                    ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(variant),
-                    ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(variant))) {
+                    ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(variant),
+                    ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(variant))) {
 
                     return Color.Goldenrod;
                 }
                 if (!ExtendedVariantTriggerManager.AreValuesIdentical(
-                    ExtendedVariantsModule.Instance.VariantHandlers[variant].GetDefaultVariantValue(),
-                    ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(variant))) {
+                    ExtendedVariantsModule.VariantHandlers[variant].GetDefaultVariantValue(),
+                    ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(variant))) {
 
                     hasMapDefinedVariants = true;
                 }
@@ -269,7 +269,7 @@ namespace ExtendedVariants.UI {
                         refreshOptionMenuEnabledStatus();
 
                         // (de)activate all hooks!
-                        if (v) ExtendedVariantsModule.Instance.HookStuff();
+                        if (v) ExtendedVariantsModule.HookStuff();
                         else ExtendedVariantsModule.Instance.UnhookStuff();
                     }));
                 ExtendedVariantsModule.Instance.CreateKeyBindingsMenu(menu, inGame, null);
@@ -477,9 +477,9 @@ namespace ExtendedVariants.UI {
                         Dialog.Clean("MODOPTIONS_EXTENDEDVARIANTS_DASHDIRECTION"),
                         i => Dialog.Clean($"MODOPTIONS_EXTENDEDVARIANTS_DASHDIRECTION_{i}"),
                         0, 3,
-                        GetDashDirectionIndex((bool[][]) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(Variant.DashDirection)),
+                        GetDashDirectionIndex((bool[][]) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(Variant.DashDirection)),
                         0, // default
-                        GetDashDirectionIndex((bool[][]) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentMapDefinedVariantValue(Variant.DashDirection)))
+                        GetDashDirectionIndex((bool[][]) ExtendedVariantsModule.TriggerManager.GetCurrentMapDefinedVariantValue(Variant.DashDirection)))
                     .Change(i => {
                         switch (i) {
                             case 1:
@@ -509,7 +509,7 @@ namespace ExtendedVariants.UI {
                 // build the dash direction submenu.
                 dashDirectionsSubMenu = new Celeste.TextMenuExt.SubMenu(Dialog.Clean("MODOPTIONS_EXTENDEDVARIANTS_DASHDIRECTION_ALLOWED"), enterOnSelect: false);
                 string[,] directionNames = new string[,] { { "TOPLEFT", "TOP", "TOPRIGHT" }, { "LEFT", "CENTER", "RIGHT" }, { "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" } };
-                bool[][] allowedDashDirections = (bool[][]) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(Variant.DashDirection);
+                bool[][] allowedDashDirections = (bool[][]) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(Variant.DashDirection);
 
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 3; j++) {
@@ -870,7 +870,7 @@ namespace ExtendedVariants.UI {
                 if (item != null) item.Visible = Settings.MasterSwitch;
             }
 
-            ExtendedVariantTriggerManager triggerManager = ExtendedVariantsModule.Instance.TriggerManager;
+            ExtendedVariantTriggerManager triggerManager = ExtendedVariantsModule.TriggerManager;
 
             // special graying-out rules for some variant options
             if (oshiroCountOption != null) oshiroCountOption.Disabled = !((bool) triggerManager.GetCurrentVariantValue(Variant.OshiroEverywhere));

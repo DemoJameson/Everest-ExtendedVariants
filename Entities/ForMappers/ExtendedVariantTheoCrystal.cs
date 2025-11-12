@@ -7,7 +7,7 @@ using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
-using System;
+using System.Linq;
 
 namespace ExtendedVariants.Entities.ForMappers {
     [CustomEntity("ExtendedVariantMode/TheoCrystal")]
@@ -15,7 +15,7 @@ namespace ExtendedVariants.Entities.ForMappers {
     [TrackedAs(typeof(TheoCrystal))]
     public class ExtendedVariantTheoCrystal : TheoCrystal {
         private static ILHook hookTheoCrystalCtor;
-        private static string spritePath = null;
+        private static string spritePath;
 
         public static void Load() {
             hookTheoCrystalCtor = new ILHook(typeof(TheoCrystal).GetMethod("orig_ctor"), modTheoCrystalCtor);
@@ -34,8 +34,12 @@ namespace ExtendedVariants.Entities.ForMappers {
             ILCursor cursor = new ILCursor(il);
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdstr("theo_crystal"))) {
                 Logger.Log("ExtendedVariantMode/ExtendedVariantTheoCrystal", $"Modding sprite path at {cursor.Index} in IL for TheoCrystal constructor");
-                cursor.EmitDelegate<Func<string, string>>(orig => spritePath ?? orig);
+
+                cursor.EmitDelegate(modSpritePath);
             }
+        }
+        private static string modSpritePath(string orig) {
+            return spritePath ?? orig;
         }
 
         private static void modTheoCrystalDie(ILContext il) {
@@ -44,7 +48,7 @@ namespace ExtendedVariants.Entities.ForMappers {
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCall<Color>("get_ForestGreen"))) {
                 Logger.Log("ExtendedVariantMode/ExtendedVariantTheoCrystal", $"Modding death effect color at {cursor.Index} in IL for TheoCrystal.Die");
                 cursor.Emit(OpCodes.Ldarg_0);
-                cursor.EmitDelegate<Func<Color, TheoCrystal, Color>>(modDeathEffectColor);
+                cursor.EmitDelegate(modDeathEffectColor);
             }
         }
 
@@ -53,12 +57,12 @@ namespace ExtendedVariants.Entities.ForMappers {
         }
 
         // true if Theo can be left behind, false if the player is blocked if they leave Theo behind, null if it was spawned through the extended variant
-        public bool AllowLeavingBehind { get; private set; } = false;
-        public bool SpawnedAsEntity { get; private set; } = false;
+        public bool AllowLeavingBehind { get; private set; }
+        public bool SpawnedAsEntity { get; private set; }
 
-        private bool forceSpawn = false;
+        private bool forceSpawn;
 
-        private Color? deathEffectColor = null;
+        private Color? deathEffectColor;
 
         public static Entity Load(Level level, LevelData levelData, Vector2 offset, EntityData entityData) {
             spritePath = entityData.Attr("sprite", defaultValue: "theo_crystal");
@@ -91,7 +95,7 @@ namespace ExtendedVariants.Entities.ForMappers {
             base.Added(scene);
 
             if (SpawnedAsEntity && !forceSpawn) {
-                foreach (ExtendedVariantTheoCrystal entity in Scene.Tracker.GetEntities<ExtendedVariantTheoCrystal>()) {
+                foreach (ExtendedVariantTheoCrystal entity in Scene.Tracker.GetEntities<ExtendedVariantTheoCrystal>().OfType<ExtendedVariantTheoCrystal>()) {
                     if (entity != this && entity.Hold.IsHeld) {
                         RemoveSelf();
                     }
@@ -112,7 +116,7 @@ namespace ExtendedVariants.Entities.ForMappers {
             base.Update();
 
             // commit remove self if the variant is disabled mid-screen and we weren't spawned as an entity
-            if (!SpawnedAsEntity && !((bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.TheoCrystalsEverywhere))) {
+            if (!SpawnedAsEntity && !((bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.TheoCrystalsEverywhere))) {
                 RemoveSelf();
             }
         }

@@ -6,12 +6,11 @@ using Monocle;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using ExtendedVariants.Variants.Vanilla;
 
-namespace ExtendedVariants {
+namespace ExtendedVariants { // leaving that, other mods might be using it
     public class ExtendedVariantTriggerManager {
         public void Load() {
             On.Celeste.Player.ctor += onPlayerCreate;
@@ -29,7 +28,7 @@ namespace ExtendedVariants {
             IL.Celeste.ChangeRespawnTrigger.OnEnter -= modRespawnTriggerOnEnter;
         }
 
-        private void onPlayerCreate(On.Celeste.Player.orig_ctor orig, Player self, Vector2 position, PlayerSpriteMode spriteMode) {
+        private static void onPlayerCreate(On.Celeste.Player.orig_ctor orig, Player self, Vector2 position, PlayerSpriteMode spriteMode) {
             orig(self, position, spriteMode);
             roomStateReset();
         }
@@ -47,7 +46,7 @@ namespace ExtendedVariants {
             commitVariantChanges();
         }
 
-        private void modRespawnTriggerOnEnter(ILContext il) {
+        private static void modRespawnTriggerOnEnter(ILContext il) {
             ILCursor cursor = new ILCursor(il);
 
             // simply jump into the "if" controlling whether the respawn should be changed or not
@@ -55,11 +54,11 @@ namespace ExtendedVariants {
             if (cursor.TryGotoNext(MoveType.After, instr => (instr.OpCode == OpCodes.Brtrue_S || instr.OpCode == OpCodes.Brfalse_S))) {
                 // and call our method in there
                 Logger.Log("ExtendedVariantMode/ExtendedVariantTriggerManager", $"Inserting call to CommitVariantChanges at index {cursor.Index} in CIL code for OnEnter in ChangeRespawnTrigger");
-                cursor.EmitDelegate<Action>(commitVariantChanges);
+                cursor.EmitDelegate(commitVariantChanges);
             }
         }
 
-        private void commitVariantChanges() {
+        private static void commitVariantChanges() {
             if (ExtendedVariantsModule.Session.OverriddenVariantsInRoom.Count != 0) {
                 // "commit" variants set in the room to save slot
                 foreach (ExtendedVariantsModule.Variant v in ExtendedVariantsModule.Session.OverriddenVariantsInRoom.Keys) {
@@ -76,7 +75,7 @@ namespace ExtendedVariants {
             // change the variant value
             if (legacy) {
                 Logger.Log(LogLevel.Debug, "ExtendedVariantMode/ExtendedVariantTriggerManager", $"Encountered a trigger for changing {variantChange} to legacy value {newValue}");
-                newValue = ExtendedVariantsModule.Instance.VariantHandlers[variantChange].ConvertLegacyVariantValue((int) newValue);
+                newValue = ExtendedVariantsModule.VariantHandlers[variantChange].ConvertLegacyVariantValue((int) newValue);
             }
 
             if (revertOnDeath || revertOnLeave) {
@@ -108,7 +107,7 @@ namespace ExtendedVariants {
         public void OnExitedRevertOnLeaveTrigger(ExtendedVariantsModule.Variant variantChange, object triggerValue, bool legacy) {
             if (legacy) {
                 Logger.Log(LogLevel.Debug, "ExtendedVariantMode/ExtendedVariantTriggerManager", $"Encountered a trigger for reverting {variantChange} from legacy value {triggerValue}");
-                triggerValue = ExtendedVariantsModule.Instance.VariantHandlers[variantChange].ConvertLegacyVariantValue((int) triggerValue);
+                triggerValue = ExtendedVariantsModule.VariantHandlers[variantChange].ConvertLegacyVariantValue((int) triggerValue);
             }
 
             if (ExtendedVariantsModule.Session.RevertOnLeaveVariantsActive.TryGetValue(variantChange, out List<object> valuesRevertOnLeave)) {
@@ -129,7 +128,7 @@ namespace ExtendedVariants {
         }
 
         public static object GetDefaultValueForVariant(ExtendedVariantsModule.Variant variant) {
-            return ExtendedVariantsModule.Instance.VariantHandlers[variant].GetDefaultVariantValue();
+            return ExtendedVariantsModule.VariantHandlers[variant].GetDefaultVariantValue();
         }
 
         public object GetCurrentVariantValue(ExtendedVariantsModule.Variant variant) {
@@ -188,7 +187,7 @@ namespace ExtendedVariants {
             return one.Equals(two);
         }
 
-        private void roomStateReset() {
+        private static void roomStateReset() {
             Logger.Log("ExtendedVariantMode/ExtendedVariantTriggerManager", "Room state reset");
             foreach (ExtendedVariantsModule.Variant variant in ExtendedVariantsModule.Session.OverriddenVariantsInRoom.Keys.ToList()) {
                 resetVariantValue(ExtendedVariantsModule.Session.OverriddenVariantsInRoom, variant);
@@ -202,7 +201,7 @@ namespace ExtendedVariants {
             }
         }
 
-        private void setVariantValueInSession(ExtendedVariantsModule.Variant variantChange, object newValue) {
+        private static void setVariantValueInSession(ExtendedVariantsModule.Variant variantChange, object newValue) {
             if (AreValuesIdentical(newValue, GetDefaultValueForVariant(variantChange))) {
                 Logger.Log("ExtendedVariantsModule/ExtendedVariantTriggerManager", $"Variant value {variantChange} = {newValue} was equal to the default, so it was removed from the session.");
                 ExtendedVariantsModule.Session.VariantsEnabledViaTrigger.Remove(variantChange);
@@ -235,7 +234,7 @@ namespace ExtendedVariants {
 
         private void resetVariantsInList<T>(Dictionary<ExtendedVariantsModule.Variant, T> list, bool isVanilla) {
             foreach (ExtendedVariantsModule.Variant variant in list.Keys.ToList()) {
-                if (ExtendedVariantsModule.Instance.VariantHandlers.TryGetValue(variant, out AbstractExtendedVariant variantHandler) && variantHandler is AbstractVanillaVariant) {
+                if (ExtendedVariantsModule.VariantHandlers.TryGetValue(variant, out AbstractExtendedVariant variantHandler) && variantHandler is AbstractVanillaVariant) {
                     if (isVanilla) {
                         resetVariantValue(list, variant);
                     }
@@ -247,14 +246,14 @@ namespace ExtendedVariants {
             }
         }
 
-        private void resetVariantValue<T>(Dictionary<ExtendedVariantsModule.Variant, T> target, ExtendedVariantsModule.Variant variantChange) {
+        private static void resetVariantValue<T>(Dictionary<ExtendedVariantsModule.Variant, T> target, ExtendedVariantsModule.Variant variantChange) {
             target.Remove(variantChange);
             onVariantValueChanged(variantChange);
         }
 
-        private void onVariantValueChanged(ExtendedVariantsModule.Variant variantChange) {
-            ExtendedVariantsModule.Instance.VariantHandlers[variantChange].VariantValueChanged();
-            ExtendedVariantsModule.Instance.Randomizer.RefreshEnabledVariantsDisplayList();
+        private static void onVariantValueChanged(ExtendedVariantsModule.Variant variantChange) {
+            ExtendedVariantsModule.VariantHandlers[variantChange].VariantValueChanged();
+            ExtendedVariantsModule.Randomizer.RefreshEnabledVariantsDisplayList();
         }
     }
 }

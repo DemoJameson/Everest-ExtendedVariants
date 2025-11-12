@@ -18,7 +18,7 @@ namespace ExtendedVariants.Entities {
         private Level level;
         private StateMachine state;
         private float waitTimer;
-        private bool playerMoved = false;
+        private bool playerMoved;
 
         public AutoDestroyingReverseOshiroModder(float offsetTime) : base(true, false) {
             this.offsetTime = offsetTime;
@@ -33,7 +33,7 @@ namespace ExtendedVariants.Entities {
             state = (StateMachine) stateMachine.GetValue(entity);
             waitTimer = offsetTime;
 
-            state.SetCallbacks(StWaitingOffset, WaitingOffsetUpdate);
+            state.SetCallbacks(StWaitingOffset, waitingOffsetUpdate);
         }
 
         public override void EntityAdded(Scene scene) {
@@ -50,7 +50,7 @@ namespace ExtendedVariants.Entities {
                 state.State = StWaitingOffset;
         }
 
-        private int WaitingOffsetUpdate() {
+        private int waitingOffsetUpdate() {
             Player player = Scene.Tracker.GetEntity<Player>();
             if (player != null && player.Speed != Vector2.Zero) playerMoved = true;
 
@@ -68,14 +68,13 @@ namespace ExtendedVariants.Entities {
         public override void Update() {
             base.Update();
 
-            Level level = SceneAs<Level>();
             Player player = level.Tracker.GetEntity<Player>();
 
             if (ExtendedVariantsModule.ShouldEntitiesAutoDestroy(player)) {
                 // during cutscenes, tell Oshiro to get outta here the same way as Badeline
                 // (we can't use the "official" way of making him leave because that doesn't cancel his attack.
                 // A Badeline vanish animation looks weird but nicer than a flat out disappearance imo)
-                level.Displacement.AddBurst(Entity.Center, 0.5f, 24f, 96f, 0.4f, null, null);
+                level.Displacement.AddBurst(Entity.Center, 0.5f, 24f, 96f, 0.4f);
                 level.Particles.Emit(BadelineOldsite.P_Vanish, 12, Entity.Center, Vector2.One * 6f);
                 Entity.RemoveSelf();
 

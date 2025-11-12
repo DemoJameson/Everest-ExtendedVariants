@@ -76,7 +76,7 @@ namespace ExtendedVariants.UI {
                 .Change(i => {
                     ExtendedVariantsModule.Settings.ChangeVariantsInterval = changeVariantsIntervalScale[i];
                     refreshOptionMenuEnabledStatus(items);
-                    ExtendedVariantsModule.Instance.Randomizer.UpdateCountersFromSettings();
+                    ExtendedVariantsModule.Randomizer.UpdateCountersFromSettings();
                 }));
 
             menu.Add(new TextMenu.Slider(Dialog.Clean("MODOPTIONS_EXTENDEDVARIANTS_RANDOMIZER_VARIANTSET"),
@@ -88,7 +88,7 @@ namespace ExtendedVariants.UI {
 
             TextMenu.Option<int> maxEnabledVariants = new TextMenu.Slider(
                 Dialog.Clean("MODOPTIONS_EXTENDEDVARIANTS_RANDOMIZER_MAXENABLEDVARIANTS" + (ExtendedVariantsModule.Settings.RerollMode ? "_REROLL" : "")),
-                i => i.ToString(), 0, ExtendedVariantsModule.Instance.VariantHandlers.Count, ExtendedVariantsModule.Settings.MaxEnabledVariants)
+                i => i.ToString(), 0, ExtendedVariantsModule.VariantHandlers.Count, ExtendedVariantsModule.Settings.MaxEnabledVariants)
                 .Change(newValue => ExtendedVariantsModule.Settings.MaxEnabledVariants = newValue);
 
             menu.Add(new TextMenu.OnOff(Dialog.Clean("MODOPTIONS_EXTENDEDVARIANTS_RANDOMIZER_REROLLMODE"), ExtendedVariantsModule.Settings.RerollMode)
@@ -107,7 +107,7 @@ namespace ExtendedVariants.UI {
             }, 0, vanillafyScale.Length - 1, indexFromVanillafyScale(ExtendedVariantsModule.Settings.Vanillafy))
                 .Change(newValue => {
                     ExtendedVariantsModule.Settings.Vanillafy = vanillafyScale[newValue];
-                    ExtendedVariantsModule.Instance.Randomizer.UpdateCountersFromSettings();
+                    ExtendedVariantsModule.Randomizer.UpdateCountersFromSettings();
                 }));
 
             if (!inGame) {
@@ -141,16 +141,16 @@ namespace ExtendedVariants.UI {
 
             // build the toggles to individually enable or disable all vanilla variants
             menu.Add(new TextMenu.SubHeader(Dialog.Clean("MODOPTIONS_EXTENDEDVARIANTS_RANDOMIZER_ENABLED_VANILLA")));
-            foreach (ExtendedVariantsModule.Variant variant in ExtendedVariantsModule.Instance.VariantHandlers.Keys) {
-                if (ExtendedVariantsModule.Instance.VariantHandlers[variant] is AbstractVanillaVariant) {
+            foreach (ExtendedVariantsModule.Variant variant in ExtendedVariantsModule.VariantHandlers.Keys) {
+                if (ExtendedVariantsModule.VariantHandlers[variant] is AbstractVanillaVariant) {
                     items.VanillaVariantOptions.Add(addToggleOptionToMenu(menu, variant));
                 }
             }
 
             // and do the same with extended ones
             menu.Add(new TextMenu.SubHeader(Dialog.Clean("MODOPTIONS_EXTENDEDVARIANTS_RANDOMIZER_ENABLED_EXTENDED")));
-            foreach (ExtendedVariantsModule.Variant variant in ExtendedVariantsModule.Instance.VariantHandlers.Keys) {
-                if (ExtendedVariantsModule.Instance.VariantHandlers[variant] is not AbstractVanillaVariant) {
+            foreach (ExtendedVariantsModule.Variant variant in ExtendedVariantsModule.VariantHandlers.Keys) {
+                if (ExtendedVariantsModule.VariantHandlers[variant] is not AbstractVanillaVariant) {
                     items.ExtendedVariantOptions.Add(addToggleOptionToMenu(menu, variant));
                 }
             }
@@ -180,7 +180,7 @@ namespace ExtendedVariants.UI {
         private static TextMenu.Item addToggleOptionToMenu(TextMenu menu, ExtendedVariantsModule.Variant variant) {
             string keyName = variant.ToString();
             string label;
-            if (ExtendedVariantsModule.Instance.VariantHandlers[variant] is AbstractVanillaVariant) {
+            if (ExtendedVariantsModule.VariantHandlers[variant] is AbstractVanillaVariant) {
                 label = VariantRandomizer.GetVanillaVariantLabel(variant);
             } else {
                 label = Dialog.Clean("MODOPTIONS_EXTENDEDVARIANTS_" + variant.ToString().ToUpperInvariant());

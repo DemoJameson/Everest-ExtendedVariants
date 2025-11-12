@@ -1,6 +1,7 @@
 ﻿using Celeste;
 using ExtendedVariants.Module;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace ExtendedVariants.Entities {
     public class AutoDestroyingBadelineBoss : FinalBoss {
@@ -19,10 +20,10 @@ namespace ExtendedVariants.Entities {
                 RemoveSelf();
 
                 // and kill all the beams and shots as well, they could still kill the player!
-                foreach (FinalBossShot shot in SceneAs<Level>().Tracker.GetEntities<FinalBossShot>()) {
+                foreach (FinalBossShot shot in SceneAs<Level>().Tracker.GetEntities<FinalBossShot>().OfType<FinalBossShot>()) {
                     shot.Destroy();
                 }
-                foreach (FinalBossBeam beam in SceneAs<Level>().Tracker.GetEntities<FinalBossBeam>()) {
+                foreach (FinalBossBeam beam in SceneAs<Level>().Tracker.GetEntities<FinalBossBeam>().OfType<FinalBossBeam>()) {
                     beam.Destroy();
                 }
             }

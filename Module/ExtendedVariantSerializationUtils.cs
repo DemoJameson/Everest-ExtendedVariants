@@ -19,7 +19,7 @@ namespace ExtendedVariants.Module {
                 foreach (Variant v in variantMap.Keys.ToList()) {
                     string value = variantMap[v].ToString();
 
-                    string type = value.Substring(0, value.IndexOf(":"));
+                    string type = value.Substring(0, value.IndexOf(':', StringComparison.Ordinal));
                     value = value.Substring(type.Length + 1);
 
                     switch (type) {
@@ -37,10 +37,10 @@ namespace ExtendedVariants.Module {
                             break;
                         case "DashDirection":
                             string[] split = value.Split(',');
-                            convertedVariants[v] = new bool[][] {
-                                new bool[] { bool.Parse(split[0]),bool.Parse(split[1]),bool.Parse(split[2]) },
-                                new bool[] { bool.Parse(split[3]),bool.Parse(split[4]),bool.Parse(split[5]) },
-                                new bool[] { bool.Parse(split[6]),bool.Parse(split[7]),bool.Parse(split[8]) }
+                            convertedVariants[v] = new[] {
+                                new[] { bool.Parse(split[0]),bool.Parse(split[1]),bool.Parse(split[2]) },
+                                new[] { bool.Parse(split[3]),bool.Parse(split[4]),bool.Parse(split[5]) },
+                                new[] { bool.Parse(split[6]),bool.Parse(split[7]),bool.Parse(split[8]) }
                             };
                             break;
                         case "DisplaySpeedometer":

@@ -3,7 +3,6 @@ using Celeste.Mod.Entities;
 using ExtendedVariants.Entities.ForMappers;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System;
 
 namespace ExtendedVariants.Entities.Legacy {
     // obsoleted by "flag" and "flagInverted" options on the new Extended Variant Triggers.

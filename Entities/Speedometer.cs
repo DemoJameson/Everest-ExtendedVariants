@@ -9,18 +9,18 @@ namespace ExtendedVariants.Entities {
     public class Speedometer : DashCountIndicator {
         private LinkedList<double> lastSpeeds = new LinkedList<double>();
 
-        protected override bool shouldShowCounter() {
-            return (DisplaySpeedometer.SpeedometerConfiguration) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplaySpeedometer)
+        protected override bool ShouldShowCounter() {
+            return (DisplaySpeedometer.SpeedometerConfiguration) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplaySpeedometer)
                 != DisplaySpeedometer.SpeedometerConfiguration.DISABLED;
         }
 
-        protected override float getExtraOffset() {
-            return (bool) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplayDashCount) ? 8f : 0f;
+        protected override float GetExtraOffset() {
+            return (bool) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplayDashCount) ? 8f : 0f;
         }
 
-        protected override string getNumberToDisplay(Player player) {
+        protected override string GetNumberToDisplay(Player player) {
             double mostRecentNumber;
-            switch ((DisplaySpeedometer.SpeedometerConfiguration) ExtendedVariantsModule.Instance.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplaySpeedometer)) {
+            switch ((DisplaySpeedometer.SpeedometerConfiguration) ExtendedVariantsModule.TriggerManager.GetCurrentVariantValue(ExtendedVariantsModule.Variant.DisplaySpeedometer)) {
                 case DisplaySpeedometer.SpeedometerConfiguration.HORIZONTAL:
                     mostRecentNumber = Math.Abs(Math.Round(player.Speed.X));
                     break;

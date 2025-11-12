@@ -9,11 +9,11 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class JungleSpidersEverywhereTrigger : AbstractExtendedVariantTrigger<JungleSpidersEverywhere.SpiderType> {
         public JungleSpidersEverywhereTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.JungleSpidersEverywhere;
         }
 
-        protected override JungleSpidersEverywhere.SpiderType getNewValue(EntityData data) {
+        protected override JungleSpidersEverywhere.SpiderType GetNewValue(EntityData data) {
             return data.Enum("newValue", JungleSpidersEverywhere.SpiderType.Disabled);
         }
     }

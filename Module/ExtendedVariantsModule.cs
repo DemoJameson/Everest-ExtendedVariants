@@ -19,7 +19,6 @@ using System.IO;
 using Celeste.Mod.Helpers;
 using Celeste.Mod.Core;
 using System.Reflection;
-using Mono.Cecil.Cil;
 
 namespace ExtendedVariants.Module {
     public class ExtendedVariantsModule : EverestModule {
@@ -31,9 +30,9 @@ namespace ExtendedVariants.Module {
         public bool MaxHelpingHandInstalled { get; private set; }
         public bool JungleHelperInstalled { get; private set; }
 
-        private bool stuffIsHooked = false;
-        private bool forceEnabled = false;
-        private bool isLevelEnding = false;
+        private static bool stuffIsHooked;
+        private static bool forceEnabled;
+        private static bool isLevelEnding;
 
         public override Type SettingsType => typeof(ExtendedVariantsSettings);
         public override Type SessionType => typeof(ExtendedVariantsSession);
@@ -45,7 +44,7 @@ namespace ExtendedVariants.Module {
         public static int GameplayWidth => GameplayBuffers.Gameplay?.Width ?? 320;
         public static int GameplayHeight => GameplayBuffers.Gameplay?.Height ?? 180;
 
-        public VariantRandomizer Randomizer;
+        public static VariantRandomizer Randomizer;
 
         public enum Variant {
             Gravity, FallSpeed, JumpHeight, WallBouncingSpeed, DisableWallJumping, DisableClimbJumping, JumpCount, RefillJumpsOnDashRefill, DashSpeed, DashLength,
@@ -74,9 +73,9 @@ namespace ExtendedVariants.Module {
             SuperDashing, ThreeSixtyDashing
         }
 
-        public Dictionary<Variant, AbstractExtendedVariant> VariantHandlers = new Dictionary<Variant, AbstractExtendedVariant>();
+        public static Dictionary<Variant, AbstractExtendedVariant> VariantHandlers = new Dictionary<Variant, AbstractExtendedVariant>();
 
-        public ExtendedVariantTriggerManager TriggerManager;
+        public static ExtendedVariantTriggerManager TriggerManager;
 
         // ================ Module loading ================
 
@@ -266,15 +265,15 @@ namespace ExtendedVariants.Module {
             if (inGame) {
                 // build the menu with only the master switch
                 new ModOptionsEntries().CreateAllOptions(ModOptionsEntries.VariantCategory.None, true, false, false,
-                    null /* don't care, no submenu */, menu, inGame, forceEnabled);
+                    null /* don't care, no submenu */, menu, true, forceEnabled);
             } else {
                 // build the menu with the master switch + submenus + randomizer options
                 new ModOptionsEntries().CreateAllOptions(ModOptionsEntries.VariantCategory.None, true, true, true,
-                    () => OuiModOptions.Instance.Overworld.Goto<OuiModOptions>(), menu, inGame, forceEnabled);
+                    () => OuiModOptions.Instance.Overworld.Goto<OuiModOptions>(), menu, false, forceEnabled);
             }
         }
 
-        private void onCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal) {
+        private static void onCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal) {
             if (CoreModule.Settings != null && !CoreModule.Settings.ShowModOptionsInGame) return;
 
             int optionsIndex = menu.Items.FindIndex(item =>
@@ -290,7 +289,7 @@ namespace ExtendedVariants.Module {
             CreateModMenuSectionKeyBindings(menu, inGame, snapshot);
             shouldCreateKeyBindingsMenu = false;
         }
-        private bool shouldCreateKeyBindingsMenu = false;
+        private bool shouldCreateKeyBindingsMenu;
 
         protected override void CreateModMenuSectionKeyBindings(TextMenu menu, bool inGame, EventInstance snapshot) {
             // Prevent base.CreateModMenuSection call this method and make the key configuration menu on top of everything
@@ -346,7 +345,7 @@ namespace ExtendedVariants.Module {
             }
         }
 
-        private static bool gameInitialized => (bool) typeof(Everest).GetField("_Initialized", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+        private static bool GameInitialized => (bool) typeof(Everest).GetField("_Initialized", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
 
         public override void Initialize() {
             base.Initialize();
@@ -425,7 +424,7 @@ namespace ExtendedVariants.Module {
             context.Add<ExtendedVariantsMapDataProcessor>();
         }
 
-        private ILHook hookOnVersionNumberAndVariants;
+        private static ILHook hookOnVersionNumberAndVariants;
 
         // A simple component that allows us to hook/unhook all the variants outside of the Engine.Update method...
         // since some hooks hook Engine.Update.
@@ -441,8 +440,8 @@ namespace ExtendedVariants.Module {
             }
         }
 
-        public void HookStuff() {
-            if (gameInitialized) {
+        public static void HookStuff() {
+            if (GameInitialized) {
                 Logger.Log("ExtendedVariantMode/ExtendedVariantsModule", "We're not in game startup, deferring the hooking of all the things");
                 Celeste.Celeste.Instance.Components.Add(new DoTheThingLater { Thing = hookStuffRightNow });
             } else {
@@ -451,7 +450,7 @@ namespace ExtendedVariants.Module {
         }
 
         public void UnhookStuff() {
-            if (gameInitialized) {
+            if (GameInitialized) {
                 Logger.Log("ExtendedVariantMode/ExtendedVariantsModule", "We're not in game startup, deferring the unhooking of all the things");
                 Celeste.Celeste.Instance.Components.Add(new DoTheThingLater { Thing = unhookStuffRightNow });
             } else {
@@ -459,11 +458,11 @@ namespace ExtendedVariants.Module {
             }
         }
 
-        private void hookStuffRightNow() {
+        private static void hookStuffRightNow() {
             if (stuffIsHooked) return;
             using (new DetourConfigContext(new DetourConfig("ExtendedVariantMode_Default")).Use()) hookStuffRightNowInner();
         }
-        private void hookStuffRightNowInner() {
+        private static void hookStuffRightNowInner() {
             Logger.Log("ExtendedVariantMode/ExtendedVariantsModule", $"Loading variant common methods...");
             On.Celeste.AreaComplete.VersionNumberAndVariants += modVersionNumberAndVariants;
             Everest.Events.Level.OnExit += onLevelExit;
@@ -496,24 +495,24 @@ namespace ExtendedVariants.Module {
 
             Logger.Log(LogLevel.Info, "ExtendedVariantMode/ExtendedVariantsModule", "Done hooking stuff.");
 
-            if (gameInitialized) {
+            if (GameInitialized) {
                 initializeStuff();
             }
 
             stuffIsHooked = true;
         }
 
-        private void initializeStuff() {
+        private static void initializeStuff() {
             Logger.Log("ExtendedVariantMode/ExtendedVariantsModule", "Loading mod hooks...");
             using (new DetourConfigContext(new DetourConfig("ExtendedVariantMode_Default")).Use()) initializeStuffInner();
         }
-        private void initializeStuffInner() {
+        private static void initializeStuffInner() {
             UpsideDown.Initialize();
             AbstractVanillaVariant.Initialize();
             VanillaVariantOptions.Initialize();
         }
 
-        public void unhookStuffRightNow() {
+        private void unhookStuffRightNow() {
             if (!stuffIsHooked) return;
 
             Logger.Log("ExtendedVariantMode/ExtendedVariantsModule", $"Unloading variant common methods...");
@@ -555,11 +554,11 @@ namespace ExtendedVariants.Module {
             stuffIsHooked = false;
         }
 
-        private bool isExtendedVariantEntity(string name) {
+        private static bool isExtendedVariantEntity(string name) {
             return name == "ExtendedVariantTrigger" || name.StartsWith("ExtendedVariantMode/");
         }
 
-        private void checkForceEnableVariants(On.Celeste.LevelLoader.orig_ctor orig, LevelLoader self, Session session, Vector2? startPosition) {
+        private static void checkForceEnableVariants(On.Celeste.LevelLoader.orig_ctor orig, LevelLoader self, Session session, Vector2? startPosition) {
             forceEnabled = false;
 
             if (AreaData.Areas.Count > session.Area.ID && AreaData.Areas[session.Area.ID].Mode.Length > (int) session.Area.Mode
@@ -627,7 +626,7 @@ namespace ExtendedVariants.Module {
 
         private void resetIsaGrabBagToDefault() {
             typeof(Celeste.Mod.IsaGrabBag.ForceVariants).GetMethod("set_Variants_Default", BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, new object[] { new bool[11] { false, false, false, false, false, false, false, false, false, false, false } });
+                .Invoke(null, new object[] { new[] { false, false, false, false, false, false, false, false, false, false, false } });
         }
 
         // ==================== Reset Variants commands =====================
@@ -648,19 +647,19 @@ namespace ExtendedVariants.Module {
 
         // ================ Stamp on Chapter Complete screen ================
 
-        private void onLevelEnd(On.Celeste.Level.orig_End orig, Level self) {
+        private static void onLevelEnd(On.Celeste.Level.orig_End orig, Level self) {
             isLevelEnding = true;
             orig(self);
             isLevelEnding = false;
         }
 
-        private void onLoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
+        private static void onLoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
             orig(self, playerIntro, isFromLoader);
 
             checkForUsedVariants();
         }
 
-        private void onUnpause(On.Celeste.Level.orig_EndPauseEffects orig, Level self) {
+        private static void onUnpause(On.Celeste.Level.orig_EndPauseEffects orig, Level self) {
             orig(self);
 
             if (!isLevelEnding) {
@@ -668,7 +667,7 @@ namespace ExtendedVariants.Module {
             }
         }
 
-        private void checkForUsedVariants() {
+        private static void checkForUsedVariants() {
             if (!Session.ExtendedVariantsWereUsed && (Settings.EnabledVariants.Count != 0 || Session.VariantsOverridenByUser.Count != 0)) {
                 Logger.Log(LogLevel.Warn, "ExtendedVariantMode/ExtendedVariantsModule", "/!\\ Variants have been used! Tagging session as dirty!");
                 Session.ExtendedVariantsWereUsed = true;
@@ -678,32 +677,32 @@ namespace ExtendedVariants.Module {
         /// <summary>
         /// Wraps the VersionNumberAndVariants in the base game in order to add the Variant Mode logo if Extended Variants are enabled.
         /// </summary>
-        private void modVersionNumberAndVariants(On.Celeste.AreaComplete.orig_VersionNumberAndVariants orig, string version, float ease, float alpha) {
+        private static void modVersionNumberAndVariants(On.Celeste.AreaComplete.orig_VersionNumberAndVariants orig, string version, float ease, float alpha) {
             if (Session.ExtendedVariantsWereUsed) {
                 // The "if" conditioning the display of the Variant Mode logo is in an "orig_" method, we can't access it with IL.Celeste.
                 // The best we can do is turn on Variant Mode, run the method then restore its original value.
                 bool oldVariantModeValue = SaveData.Instance.VariantMode;
                 SaveData.Instance.VariantMode = true;
 
-                orig.Invoke(version, ease, alpha);
+                orig(version, ease, alpha);
 
                 SaveData.Instance.VariantMode = oldVariantModeValue;
             } else {
                 // Extended Variants are disabled so just keep the original behaviour
-                orig.Invoke(version, ease, alpha);
+                orig(version, ease, alpha);
             }
         }
 
-        private void ilModVersionNumberAndVariants(ILContext il) {
+        private static void ilModVersionNumberAndVariants(ILContext il) {
             ILCursor cursor = new ILCursor(il);
 
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdstr("cs_variantmode"))) {
                 Logger.Log("ExtendedVariantMode/ExtendedVariantsModule", $"Injecting method to mod Variant Mode logo at {cursor.Index} in IL for AreaComplete.orig_VersionNumberAndVariants");
-                cursor.EmitDelegate<Func<string, string>>(modVariantModeLogo);
+                cursor.EmitDelegate(modVariantModeLogo);
             }
         }
 
-        private string modVariantModeLogo(string orig) {
+        private static string modVariantModeLogo(string orig) {
             if (Session.ExtendedVariantsWereUsed) {
                 return "ExtendedVariantMode/complete_screen_stamp";
             }
@@ -781,8 +780,8 @@ namespace ExtendedVariants.Module {
 
         // ================ Common methods for multiple variants ================
 
-        private static bool badelineBoosting = false;
-        private static bool prologueEndingCutscene = false;
+        private static bool badelineBoosting;
+        private static bool prologueEndingCutscene;
 
         public static bool ShouldIgnoreCustomDelaySettings() {
             if (Engine.Scene.GetType() == typeof(Level)) {
@@ -824,25 +823,25 @@ namespace ExtendedVariants.Module {
         public static bool ShouldEntitiesAutoDestroy(Player player) {
             return (player != null && (player.StateMachine.State == 10 || player.StateMachine.State == 11) && !badelineBoosting)
                 || prologueEndingCutscene // this kills Oshiro, that prevents the Prologue ending cutscene from even triggering.
-                || !Instance.stuffIsHooked; // this makes all the mess instant vanish when Extended Variants are disabled entirely.
+                || !stuffIsHooked; // this makes all the mess instant vanish when Extended Variants are disabled entirely.
         }
 
-        private IEnumerator modBadelineBoostRoutine(On.Celeste.BadelineBoost.orig_BoostRoutine orig, BadelineBoost self, Player player) {
+        private static IEnumerator modBadelineBoostRoutine(On.Celeste.BadelineBoost.orig_BoostRoutine orig, BadelineBoost self, Player player) {
             badelineBoosting = true;
             yield return new SwapImmediately(orig(self, player));
             badelineBoosting = false;
         }
 
-        private void onLevelExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow) {
+        private static void onLevelExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow) {
             onLevelExit();
         }
 
-        private void onLevelExit() {
+        private static void onLevelExit() {
             badelineBoosting = false;
             prologueEndingCutscene = false;
         }
 
-        private void onPrologueEndingCutsceneBegin(On.Celeste.CS00_Ending.orig_OnBegin orig, CS00_Ending self, Level level) {
+        private static void onPrologueEndingCutsceneBegin(On.Celeste.CS00_Ending.orig_OnBegin orig, CS00_Ending self, Level level) {
             orig(self, level);
 
             prologueEndingCutscene = true;

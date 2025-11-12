@@ -7,7 +7,7 @@ namespace ExtendedVariants.Entities.ForMappers {
     public class FloatExtendedVariantTrigger : AbstractExtendedVariantTrigger<float> {
         public FloatExtendedVariantTrigger(EntityData data, Vector2 offset) : base(data, offset) { }
 
-        protected override float getNewValue(EntityData data) {
+        protected override float GetNewValue(EntityData data) {
             return data.Float("newValue");
         }
     }

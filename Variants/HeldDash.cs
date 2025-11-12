@@ -1,12 +1,12 @@
 ﻿using Celeste;
 using Celeste.Mod;
+using ExtendedVariants.Module;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Collections;
 using System.Reflection;
-using Celeste.Mod.EV;
 using static ExtendedVariants.Module.ExtendedVariantsModule;
 
 namespace ExtendedVariants.Variants {

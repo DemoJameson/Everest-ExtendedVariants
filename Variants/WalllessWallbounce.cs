@@ -120,14 +120,14 @@ namespace ExtendedVariants.Variants {
         }
 
         private static bool WalllessWallbounceDashCheck(Player player) {
-            bool canWallbounce = (bool) Instance.TriggerManager.GetCurrentVariantValue(Variant.WalllessWallbounce);
+            bool canWallbounce = (bool) TriggerManager.GetCurrentVariantValue(Variant.WalllessWallbounce);
             if (canWallbounce)
                 DoWallbounce(player);
             return canWallbounce;
         }
 
         private static bool WalllessWallbounceNormalCheck(Player player, bool canUnDuck) {
-            bool variantEnabled = (bool) Instance.TriggerManager.GetCurrentVariantValue(Variant.WalllessWallbounce);
+            bool variantEnabled = (bool) TriggerManager.GetCurrentVariantValue(Variant.WalllessWallbounce);
             if (!variantEnabled) return false;
 
             DynamicData playerData = DynamicData.For(player);

@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace ExtendedVariants.Entities {
     public class AutoDestroyingBadelineOldsite : BadelineOldsite {
-        private bool waitingForWatchtower = false;
+        private bool waitingForWatchtower;
 
         public AutoDestroyingBadelineOldsite(EntityData data, Vector2 position, int index) : base(data, position, index) { }
 
@@ -15,12 +15,11 @@ namespace ExtendedVariants.Entities {
                 base.Update();
 
                 Level level = SceneAs<Level>();
-                Player player = level.Tracker.GetEntity<Player>();
 
                 if (ExtendedVariantsModule.ShouldEntitiesAutoDestroy(player)) {
                     // we are in a cutscene **but not the Badeline Intro one**
                     // so we should just make the chasers disappear to prevent them from killing the player mid-cutscene
-                    level.Displacement.AddBurst(Center, 0.5f, 24f, 96f, 0.4f, null, null);
+                    level.Displacement.AddBurst(Center, 0.5f, 24f, 96f, 0.4f);
                     level.Particles.Emit(P_Vanish, 12, Center, Vector2.One * 6f);
 
                     if (!BadelineChasersEverywhere.UsingWatchtower) {
@@ -37,7 +36,7 @@ namespace ExtendedVariants.Entities {
                 waitingForWatchtower = false;
                 Visible = true;
 
-                SceneAs<Level>().Displacement.AddBurst(Center, 0.5f, 24f, 96f, 0.4f, null, null);
+                SceneAs<Level>().Displacement.AddBurst(Center, 0.5f, 24f, 96f, 0.4f);
                 SceneAs<Level>().Particles.Emit(P_Vanish, 12, Center, Vector2.One * 6f);
             }
         }

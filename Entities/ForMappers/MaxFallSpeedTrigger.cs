@@ -14,7 +14,7 @@ namespace ExtendedVariants.Entities.ForMappers {
             legacy = data.Bool("legacy");
         }
 
-        protected override ExtendedVariantsModule.Variant getVariant(EntityData data) {
+        protected override ExtendedVariantsModule.Variant GetVariant(EntityData data) {
             return ExtendedVariantsModule.Variant.FallSpeed;
         }
 
